@@ -43,13 +43,18 @@ main {
   font-weight: bold;
 }
 .write-btn {
-  background-color: #fe6f0f;
+  background-color: var(--button-primary);
   color: white;
-  font-size: 20px;
-  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   padding: 10px 15px 10px 15px;
+  font-size: 20px;
   border-radius: 20px;
   position: fixed;
-  bottom: 120px;
   right: 20px;
+  bottom: 120px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  cursor: pointer;
+}
+
+.write-btn:hover {
+  background-color: var(--button-hover);
 }
