@@ -8,6 +8,18 @@ import sqlite3
 con = sqlite3.connect('db.db', check_same_thread=False)
 cur = con.cursor() # 특정 인서트하거나 셀렉트할 때 사용
 
+cur.execute(f"""
+            CREATE TABLE IF NOT EXISTS items (
+            id INTEGER PRIMARY KEY,
+            title TEXT NOT NULL,
+            image BLOB,
+            price INTEGER NOT NULL,
+            description TEXT,
+            place TEXT NOT NULL,
+            insertAt INTEGER NOT NULL
+            );
+            """)
+
 app = FastAPI()
 
 @app.post('/items')
