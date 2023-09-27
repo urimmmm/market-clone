@@ -57,7 +57,20 @@ async def get_image(item_id):
                              SELECT image FROM items WHERE id={item_id}
                              """).fetchone()[0]
     #16진법으로 된거를 바꿔서 보내겠다
-    return Response(content=bytes.fromhex(image_byte))
+    return Response(content=bytes.fromhex(image_byte), media_type="image/*")
+
+@app.post("/signup")
+def signup(id:Annotated[str, Form()], 
+           password:Annotated[str, Form()],
+           name:Annotated[str, Form()], 
+           email:Annotated[str, Form()]):
+    cur.execute(f"""
+                INSERT INTO users(id, name, email, password)
+                VALUES('{id}', '{name}', '{email}', '{password}')
+                """)
+    
+    con.commit()
+    return '200'
 
 
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
