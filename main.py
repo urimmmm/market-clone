@@ -2,11 +2,16 @@ from fastapi import FastAPI,UploadFile,Form,Response
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from fastapi.staticfiles import StaticFiles
+from fastapi_login import LoginManager
 from typing import Annotated
 import sqlite3
 
+
 con = sqlite3.connect('db.db', check_same_thread=False)
 cur = con.cursor() # 특정 인서트하거나 셀렉트할 때 사용
+
+
+app = FastAPI()
 
 cur.execute(f"""
             CREATE TABLE IF NOT EXISTS items (
@@ -20,7 +25,25 @@ cur.execute(f"""
             );
             """)
 
-app = FastAPI()
+
+
+@app.post("/signup")
+def signup(id:Annotated[str, Form()], 
+           password:Annotated[str, Form()],
+           name: Annotated[str, Form()],
+           email:Annotated[str, Form()]):
+    #기존에 회원가입이 되어있는 사람도 또 가입이 되기때문에 안되도록 해보기!!!!
+    # DB에 저장시킴
+    cur.execute(f"""
+                INSERT INTO users(id, name, email, password)
+                Values('{id}', '{name}', '{email}', '{password}')
+                """)
+    # DB에 들어갔는지 확인하기 위해서 커밋해줌
+    con.commit()
+    return "200"
+
+
+
 
 @app.post('/items')
 async def create_item(image:UploadFile,
@@ -58,19 +81,6 @@ async def get_image(item_id):
                              """).fetchone()[0]
     #16진법으로 된거를 바꿔서 보내겠다
     return Response(content=bytes.fromhex(image_byte), media_type="image/*")
-
-@app.post("/signup")
-def signup(id:Annotated[str, Form()], 
-           password:Annotated[str, Form()],
-           name:Annotated[str, Form()], 
-           email:Annotated[str, Form()]):
-    cur.execute(f"""
-                INSERT INTO users(id, name, email, password)
-                VALUES('{id}', '{name}', '{email}', '{password}')
-                """)
-    
-    con.commit()
-    return '200'
 
 
 app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
