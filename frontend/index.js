@@ -56,8 +56,19 @@ const renderData = (data) => {
 
 //서버에서 데이터를 받아와서 리스트 형식으로 보내주는 내용
 const fetchList = async () => {
-  //파이썬에 있는 /items와 다름 (파이썬은 POST메소드이기 때문)
-  const res = await fetch("/items");
+  //토큰값을 받아오는 것
+  const accessTocken = window.localStorage.getItem("token");
+  const res = await fetch("/items", {
+    headers: {
+      Authorization: `Bearer ${accessTocken}`,
+    },
+  });
+
+  if (res.status === 401) {
+    alert("로그인 필요");
+    window.location.pathname = "/login.html";
+    return;
+  }
   const data = await res.json();
   renderData(data);
 };
