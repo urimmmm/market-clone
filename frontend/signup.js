@@ -27,8 +27,6 @@ const handleSubmit = async (event) => {
     //서버에서 응답이 온 후에 200이라는 값이면 성공했으므로 멘트는 보내줌
     const data = await res.json();
     if (data === "200") {
-      //div.innerText = "회원가입 성공";
-      //div.style.color = "blue";
       alert("성공");
       window.location.pathname = "/login.html";
     }
