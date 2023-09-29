@@ -7,14 +7,46 @@
   import Write from "./pages/Write.svelte";
   import Router from "svelte-spa-router";
   import "./css/style.css";
+  import { user$ } from "./store";
+  import {
+    GoogleAuthProvider,
+    getAuth,
+    signInWithCredential,
+  } from "firebase/auth";
+  import { onMount } from "svelte";
+  import Loading from "./pages/Loading.svelte";
+
+  const auth = getAuth();
+
+  const checkLogin = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return (isLoading = false);
+
+    const credential = GoogleAuthProvider.credential(null, token);
+    const result = await signInWithCredential(auth, credential);
+    const user = result.user;
+    user$.set(user);
+    isLoading = false;
+  };
+
+  const provider = new GoogleAuthProvider();
+  provider.addScope("http://www.googleapis.com/auth/contacts.readonly");
+
+  let isLoading = true;
+  let login = false;
 
   const routes = {
     "/": Main,
-    "/login": Login,
     "/signup": Signup,
     "/write": Write,
     "*": Notfound,
   };
+
+  onMount(() => checkLogin());
 </script>
 
-<Router {routes} />
+{#if !login}
+  <Login />
+{:else}
+  <Router {routes} />
+{/if}
